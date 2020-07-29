@@ -1,1 +1,1 @@
-docker build -t falco --build-arg FALCO_VERSION=0.24.0 .
+docker build -t "kronostechnologies/falco:$(git describe --tags)" .

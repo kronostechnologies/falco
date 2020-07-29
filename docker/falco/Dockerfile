@@ -45,7 +45,7 @@ RUN curl -s https://falco.org/repo/falcosecurity-3672BA8F.asc | apt-key add - \
 RUN sed -e 's/time_format_iso_8601: false/time_format_iso_8601: true/' < /etc/falco/falco.yaml > /etc/falco/falco.yaml.new \
 	&& mv /etc/falco/falco.yaml.new /etc/falco/falco.yaml
 
-RUN sed -i -e '/RING_BUF_SIZE/s/8/64/' /usr/src/*/ppm_ringbuffer.h
+RUN sed -i -e '/RING_BUF_SIZE/s/8/32/' /usr/src/*/ppm_ringbuffer.h
 
 # Some base images have an empty /lib/modules by default
 # If it's not empty, docker build will fail instead of
