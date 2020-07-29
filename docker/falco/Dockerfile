@@ -1,13 +1,13 @@
 FROM ubuntu:focal AS builder
 
-RUN apt update ; DEBIAN_FRONTEND=noninteractive apt install libssl-dev libyaml-dev libncurses-dev libc-ares-dev libprotobuf-dev protobuf-compiler libjq-dev libyaml-cpp-dev libgrpc++-dev protobuf-compiler-grpc rpm libelf-dev cmake build-essential libcurl4-openssl-dev linux-headers-generic clang llvm git -y ; apt-get clean
+RUN apt update ; DEBIAN_FRONTEND=noninteractive apt install libssl-dev libyaml-dev libncurses-dev libc-ares-dev libprotobuf-dev protobuf-compiler libjq-dev libyaml-cpp-dev libgrpc++-dev protobuf-compiler-grpc rpm libelf-dev cmake build-essential libcurl4-openssl-dev linux-headers-generic clang llvm git pkg-config -y ; apt-get clean
 
 WORKDIR /code
 COPY . .
 
 WORKDIR /code/build
 
-RUN cmake -DBUILD_BPF=On ..
+RUN cmake -DBUILD_BPF=On -DUSE_BUNDLED_DEPS=ON -DCMAKE_INSTALL_PREFIX=/usr DCMAKE_BUILD_TYPE=release ..
 
 RUN sed -i -e '/RING_BUF_SIZE/s/8/64/' sysdig-repo/sysdig-prefix/src/sysdig/driver/ppm_ringbuffer.h && \
     sed -i -e '/RING_BUF_SIZE/s/8/64/' driver/src/ppm_ringbuffer.h
