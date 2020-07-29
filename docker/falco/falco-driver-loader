@@ -465,7 +465,7 @@ print_usage() {
 ARCH=$(uname -m)
 KERNEL_RELEASE=$(uname -r)
 KERNEL_VERSION=$(uname -v | sed 's/#\([[:digit:]]\+\).*/\1/')
-DRIVERS_REPO=${DRIVERS_REPO:-"@DRIVERS_REPO@"}
+DRIVERS_REPO=${DRIVERS_REPO:-"https://dl.bintray.com/falcosecurity/driver"}
 
 if [ -n "$DRIVER_INSECURE_DOWNLOAD" ]
 then
@@ -478,8 +478,8 @@ if [[ -z "$MAX_RMMOD_WAIT" ]]; then
 	MAX_RMMOD_WAIT=60
 fi
 
-DRIVER_VERSION="@PROBE_VERSION@"
-DRIVER_NAME="@PROBE_NAME@"
+DRIVER_VERSION="85c88952b018fdbce2464222c3303229f5bfcfad"
+DRIVER_NAME="falco"
 
 DRIVER="module"
 if [ -v FALCO_BPF_PROBE ]; then
