@@ -1,20 +1,14 @@
-FROM ubuntu:focal AS builder
+FROM falcosecurity/falco-builder AS builder
 
-RUN apt update ; DEBIAN_FRONTEND=noninteractive apt install libssl-dev libyaml-dev libncurses-dev libc-ares-dev libprotobuf-dev protobuf-compiler libjq-dev libyaml-cpp-dev libgrpc++-dev protobuf-compiler-grpc rpm libelf-dev cmake build-essential libcurl4-openssl-dev linux-headers-generic clang llvm git pkg-config autoconf libtool -y ; apt-get clean
+COPY . /source/falco
 
-WORKDIR /code
-COPY . .
+RUN /usr/bin/entrypoint cmake
 
-WORKDIR /code/build
+RUN sed -i -e '/RING_BUF_SIZE/s/8/64/' /build/release/sysdig-repo/sysdig-prefix/src/sysdig/driver/ppm_ringbuffer.h && \
+    sed -i -e '/RING_BUF_SIZE/s/8/64/' /build/release/driver/src/ppm_ringbuffer.h
 
-RUN cmake -DBUILD_BPF=On -DUSE_BUNDLED_DEPS=ON -DCMAKE_INSTALL_PREFIX=/usr DCMAKE_BUILD_TYPE=release ..
-
-RUN sed -i -e '/RING_BUF_SIZE/s/8/64/' sysdig-repo/sysdig-prefix/src/sysdig/driver/ppm_ringbuffer.h && \
-    sed -i -e '/RING_BUF_SIZE/s/8/64/' driver/src/ppm_ringbuffer.h
-
-RUN KERNELDIR=/lib/modules/$(ls /lib/modules)/build make -j4 all && \
-    KERNELDIR=/lib/modules/$(ls /lib/modules)/build make package
-
+RUN /usr/bin/entrypoint all && \
+    /usr/bin/entrypoint package
 
 FROM ubuntu:focal
 
@@ -51,7 +45,7 @@ RUN apt-get update \
 	xz-utils \
 	&& rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /code/build/falco*.deb /tmp
+COPY --from=builder /build/release/falco*.deb /tmp
 RUN dpkg -i /tmp/falco*.deb ; rm -rf /tmp/falco*.deb
 
 # Change the falco config within the container to enable ISO 8601
