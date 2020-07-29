@@ -1,6 +1,6 @@
 FROM ubuntu:focal AS builder
 
-RUN apt update ; DEBIAN_FRONTEND=noninteractive apt install libssl-dev libyaml-dev libncurses-dev libc-ares-dev libprotobuf-dev protobuf-compiler libjq-dev libyaml-cpp-dev libgrpc++-dev protobuf-compiler-grpc rpm libelf-dev cmake build-essential libcurl4-openssl-dev linux-headers-generic clang llvm git pkg-config -y ; apt-get clean
+RUN apt update ; DEBIAN_FRONTEND=noninteractive apt install libssl-dev libyaml-dev libncurses-dev libc-ares-dev libprotobuf-dev protobuf-compiler libjq-dev libyaml-cpp-dev libgrpc++-dev protobuf-compiler-grpc rpm libelf-dev cmake build-essential libcurl4-openssl-dev linux-headers-generic clang llvm git pkg-config autoconf libtool -y ; apt-get clean
 
 WORKDIR /code
 COPY . .
