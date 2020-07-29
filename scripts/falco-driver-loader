@@ -559,7 +559,6 @@ if [ -z "$source_only" ]; then
 	fi
 
 	echo "* Running falco-driver-loader with: driver=$DRIVER, compile=${ENABLE_COMPILE:-"no"}, download=${ENABLE_DOWNLOAD:-"no"}, module_args=(${MODULE_ARGS[@]})"
-	exit 0
 	case $DRIVER in 
 		module)
 			load_kernel_module
