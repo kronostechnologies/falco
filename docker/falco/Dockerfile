@@ -1,3 +1,21 @@
+FROM ubuntu:focal AS builder
+
+RUN apt update ; DEBIAN_FRONTEND=noninteractive apt install libssl-dev libyaml-dev libncurses-dev libc-ares-dev libprotobuf-dev protobuf-compiler libjq-dev libyaml-cpp-dev libgrpc++-dev protobuf-compiler-grpc rpm libelf-dev cmake build-essential libcurl4-openssl-dev linux-headers-generic clang llvm git -y ; apt-get clean
+
+WORKDIR /code
+COPY . .
+
+WORKDIR /code/build
+
+RUN cmake -DBUILD_BPF=On ..
+
+RUN sed -i -e '/RING_BUF_SIZE/s/8/64/' sysdig-repo/sysdig-prefix/src/sysdig/driver/ppm_ringbuffer.h && \
+    sed -i -e '/RING_BUF_SIZE/s/8/64/' driver/src/ppm_ringbuffer.h
+
+RUN KERNELDIR=/lib/modules/$(ls /lib/modules)/build make -j4 all && \
+    KERNELDIR=/lib/modules/$(ls /lib/modules)/build make package
+
+
 FROM ubuntu:focal
 
 LABEL maintainer="cncf-falco-dev@lists.cncf.io"
@@ -33,7 +51,7 @@ RUN apt-get update \
 	xz-utils \
 	&& rm -rf /var/lib/apt/lists/*
 
-COPY ./falco*.deb /tmp
+COPY --from=builder /code/build/falco*.deb /tmp
 RUN dpkg -i /tmp/falco*.deb ; rm -rf /tmp/falco*.deb
 
 # Change the falco config within the container to enable ISO 8601
@@ -47,8 +65,7 @@ RUN sed -e 's/time_format_iso_8601: false/time_format_iso_8601: true/' < /etc/fa
 RUN rm -df /lib/modules \
 	&& ln -s $HOST_ROOT/lib/modules /lib/modules
 
-COPY ./docker-entrypoint.sh /
-COPY ./falco-driver-loader /usr/bin/
+COPY ./docker/falco/docker-entrypoint.sh /
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
