@@ -10,7 +10,7 @@ RUN sed -i -e '/RING_BUF_SIZE/s/8/64/' /build/release/sysdig-repo/sysdig-prefix/
 RUN /usr/bin/entrypoint all && \
     /usr/bin/entrypoint package
 
-FROM ubuntu:focal
+FROM ubuntu:bionic
 
 LABEL maintainer="cncf-falco-dev@lists.cncf.io"
 
@@ -28,14 +28,22 @@ RUN cp /etc/skel/.bashrc /root && cp /etc/skel/.profile /root
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
+	ca-certificates \
+	gnupg2 \
+	&& echo "deb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu bionic main" >> /etc/apt/sources.list \
+	&& apt-key adv --keyserver keyserver.ubuntu.com --recv 1E9377A2BA9EF27F \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends \
 	bash-completion \
 	bc \
 	clang-7 \
-	ca-certificates \
 	curl \
 	dkms \
-	gnupg2 \
-	gcc \
+	gcc-5 \
+	gcc-6 \
+	gcc-7 \
+	gcc-8 \
+	gcc-9 \
 	jq \
 	libc6-dev \
 	libelf-dev \
@@ -44,6 +52,15 @@ RUN apt-get update \
 	netcat \
 	xz-utils \
 	&& rm -rf /var/lib/apt/lists/*
+
+# default to gcc-5 for 3.10 kernels.
+RUN rm -rf /usr/bin/gcc && ln -s /usr/bin/gcc-5 /usr/bin/gcc
+
+RUN rm -rf /usr/bin/clang \
+	&& rm -rf /usr/bin/llc \
+	&& ln -s /usr/bin/clang-7 /usr/bin/clang \
+	&& ln -s /usr/bin/llc-7 /usr/bin/llc
+
 
 COPY --from=builder /build/release/falco*.deb /tmp
 RUN dpkg -i /tmp/falco*.deb ; rm -rf /tmp/falco*.deb
