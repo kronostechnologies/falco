@@ -2,6 +2,8 @@ FROM falcosecurity/falco-builder AS builder
 
 COPY . /source/falco
 
+RUN ls /source/falco
+
 RUN /usr/bin/entrypoint cmake
 
 RUN sed -i -e '/RING_BUF_SIZE/s/8/64/' /build/release/sysdig-repo/sysdig-prefix/src/sysdig/driver/ppm_ringbuffer.h && \
