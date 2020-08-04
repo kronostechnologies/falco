@@ -55,9 +55,6 @@ RUN apt-get update \
 	xz-utils \
 	&& rm -rf /var/lib/apt/lists/*
 
-# default to gcc-5 for 3.10 kernels.
-RUN rm -rf /usr/bin/gcc && ln -s /usr/bin/gcc-5 /usr/bin/gcc
-
 RUN rm -rf /usr/bin/clang \
 	&& rm -rf /usr/bin/llc \
 	&& ln -s /usr/bin/clang-7 /usr/bin/clang \
