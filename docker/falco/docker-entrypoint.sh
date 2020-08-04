@@ -44,9 +44,9 @@ if [[ -z "${SKIP_DRIVER_LOADER}" ]] && [[ -z "${SKIP_MODULE_LOAD}" ]]; then
 	GCC_KERNEL_VERSION="${GCC_MAX_VERSION}"
     fi
 
-    echo "* Setting up link /usr/bin/gcc-${GCC_VERSION}->/usr/bin/gcc from /proc/version"
+    echo "* Setting up link /usr/bin/gcc-${GCC_KERNEL_VERSION}->/usr/bin/gcc from /proc/version"
 
-    ln -sf "/usr/bin/gcc-${GCC_VERSION}" "/usr/bin/gcc"
+    ln -sf "/usr/bin/gcc-${GCC_KERNEL_VERSION}" "/usr/bin/gcc"
 
     /usr/bin/falco-driver-loader ${DRIVER_LOADER_ARGS}
 fi
