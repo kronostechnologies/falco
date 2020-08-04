@@ -22,7 +22,6 @@ if [[ ! -z "${SKIP_MODULE_LOAD}" ]]; then
 fi
 
 # Set the SKIP_DRIVER_LOADER variable to skip loading the driver
-
 if [[ -z "${SKIP_DRIVER_LOADER}" ]] && [[ -z "${SKIP_MODULE_LOAD}" ]]; then
     echo "* Setting up /usr/src links from host"
 
@@ -31,6 +30,23 @@ if [[ -z "${SKIP_DRIVER_LOADER}" ]] && [[ -z "${SKIP_MODULE_LOAD}" ]]; then
         base=$(basename "$i")
         ln -s "$i" "/usr/src/$base"
     done
+
+    GCC_AVAILABLE_VERSIONS=( $(ls /usr/bin | grep -Po "^gcc-\K[0-9]+") )
+    GCC_MIN_VERSION="${GCC_AVAILABLE_VERSIONS[0]}"
+    GCC_MAX_VERSION="${GCC_AVAILABLE_VERSIONS[-1]}"
+    GCC_KERNEL_VERSION="$(grep -Po "gcc version \K[0-9]+" /proc/version 2>/dev/null)"
+
+    if [[ $GCC_KERNEL_VERSION -lt $GCC_MIN_VERSION ]]; then
+	# Version not parsed or lower than lowest installed version
+        GCC_KERNEL_VERSION="${GCC_MIN_VERSION}"
+    elif [[ $GCC_KERNEL_VERSION -gt $GCC_MAX_VERSION ]]; then
+	# Version greater than highest installed version
+	GCC_KERNEL_VERSION="${GCC_MAX_VERSION}"
+    fi
+
+    echo "* Setting up link /usr/bin/gcc-${GCC_VERSION}->/usr/bin/gcc from /proc/version"
+
+    ln -sf "/usr/bin/gcc-${GCC_VERSION}" "/usr/bin/gcc"
 
     /usr/bin/falco-driver-loader ${DRIVER_LOADER_ARGS}
 fi
