@@ -48,7 +48,7 @@ if [[ -z "${SKIP_DRIVER_LOADER}" ]] && [[ -z "${SKIP_MODULE_LOAD}" ]]; then
 
     ln -sf "/usr/bin/gcc-${GCC_KERNEL_VERSION}" "/usr/bin/gcc"
 
-    /usr/bin/falco-driver-loader
+    /usr/bin/falco-driver-loader ${FALCO_DRIVER_LOADER_ARGS}
 fi
 
 exec "$@"
