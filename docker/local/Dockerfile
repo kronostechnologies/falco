@@ -40,6 +40,7 @@ RUN apt-get update \
 	libmpx2 \
 	libquadmath0 \
 	libcc1-0 \
+	libssl1.0.0 \
 	&& rm -rf /var/lib/apt/lists/*
 
 # gcc 6 is no longer included in debian stable, but we need it to

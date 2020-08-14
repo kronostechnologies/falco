@@ -44,6 +44,7 @@ RUN apt-get update \
 	libc6-dev \
 	libelf-dev \
 	libmpx2 \
+	libssl1.0.0 \
 	llvm-7 \
 	netcat \
 	xz-utils \
