@@ -14,7 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+#ifndef MINIMAL_BUILD
 #include <google/protobuf/util/time_util.h>
+#endif
 
 #include "falco_outputs.h"
 
@@ -22,15 +24,19 @@ limitations under the License.
 
 #include "formats.h"
 #include "logger.h"
+#ifndef MINIMAL_BUILD
 #include "falco_outputs_queue.h"
+#endif
 #include "banned.h" // This raises a compilation error when certain functions are used
 
 using namespace std;
 
 const static struct luaL_reg ll_falco_outputs [] =
 {
+#ifndef MINIMAL_BUILD
 	{"handle_http", &falco_outputs::handle_http},
 	{"handle_grpc", &falco_outputs::handle_grpc},
+#endif
 	{NULL, NULL}
 };
 
@@ -72,7 +78,8 @@ falco_outputs::~falco_outputs()
 void falco_outputs::init(bool json_output,
 			 bool json_include_output_property,
 			 uint32_t rate, uint32_t max_burst, bool buffered,
-			 bool time_format_iso_8601, string hostname)
+			 bool time_format_iso_8601, string hostname,
+			 const string& alternate_lua_dir)
 {
 	// The engine must have been given an inspector by now.
 	if(!m_inspector)
@@ -82,7 +89,7 @@ void falco_outputs::init(bool json_output,
 
 	m_json_output = json_output;
 
-	falco_common::init(m_lua_main_filename.c_str(), FALCO_SOURCE_LUA_DIR);
+	falco_common::init(m_lua_main_filename.c_str(), alternate_lua_dir.c_str());
 
 	// Note that falco_formats is added to both the lua state used
 	// by the falco engine as well as the separate lua state used
@@ -259,6 +266,7 @@ void falco_outputs::reopen_outputs()
 	}
 }
 
+#ifndef MINIMAL_BUILD
 int falco_outputs::handle_http(lua_State *ls)
 {
 	CURL *curl = NULL;
@@ -369,3 +377,4 @@ int falco_outputs::handle_grpc(lua_State *ls)
 
 	return 1;
 }
+#endif

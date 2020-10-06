@@ -19,6 +19,13 @@ set -euo pipefail
 
 SCRIPT=$(readlink -f $0)
 SCRIPTDIR=$(dirname "$SCRIPT")
+SKIP_PACKAGES_TESTS=${SKIP_PACKAGES_TESTS:-false}
+
+# Trace file tarballs are now versioned. Any time a substantial change
+# is made that affects the interaction of rules+engine and the trace
+# files here, upload a new trace file zip file and change the version
+# suffix here.
+TRACE_FILES_VERSION=20200831
 
 function download_trace_files() {
     for TRACE in traces-positive traces-negative traces-info ; do
@@ -26,7 +33,7 @@ function download_trace_files() {
         if [ "$OPT_BRANCH" != "none" ]; then
         curl -fso "$TRACE_DIR/$TRACE.zip" https://s3.amazonaws.com/download.draios.com/falco-tests/$TRACE-$OPT_BRANCH.zip
         else
-        curl -fso "$TRACE_DIR/$TRACE.zip" https://s3.amazonaws.com/download.draios.com/falco-tests/$TRACE.zip
+        curl -fso "$TRACE_DIR/$TRACE.zip" https://s3.amazonaws.com/download.draios.com/falco-tests/$TRACE-$TRACE_FILES_VERSION.zip
         fi
         unzip -d "$TRACE_DIR" "$TRACE_DIR/$TRACE.zip"
         rm -rf "$TRACE_DIR/$TRACE.zip"
@@ -91,7 +98,13 @@ function run_tests() {
     # as we're watching the return status when running avocado.
     set +e
     TEST_RC=0
-    for mult in $SCRIPTDIR/falco_traces.yaml $SCRIPTDIR/falco_tests.yaml $SCRIPTDIR/falco_tests_package.yaml $SCRIPTDIR/falco_k8s_audit_tests.yaml $SCRIPTDIR/falco_tests_psp.yaml; do
+    suites=($SCRIPTDIR/falco_traces.yaml $SCRIPTDIR/falco_tests.yaml $SCRIPTDIR/falco_k8s_audit_tests.yaml $SCRIPTDIR/falco_tests_psp.yaml)
+
+    if [ "$SKIP_PACKAGES_TESTS" = false ] ; then
+        suites+=($SCRIPTDIR/falco_tests_package.yaml)
+    fi
+    
+    for mult in "${suites[@]}"; do
         CMD="avocado run --mux-yaml $mult --job-results-dir $SCRIPTDIR/job-results -- $SCRIPTDIR/falco_test.py"
         echo "Running $CMD"
         BUILD_DIR=${OPT_BUILD_DIR} $CMD

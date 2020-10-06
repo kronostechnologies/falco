@@ -1,6 +1,93 @@
 # Change Log
 
-This file documents all notable changes to Falco. The release numbering uses [semantic versioning](http://semver.org).
+## v0.26.1
+
+Released on 2020-10-01
+
+### Major Changes
+
+* new: CLI flag `--alternate-lua-dir` to load Lua files from arbitrary paths [[#1419](https://github.com/falcosecurity/falco/pull/1419)] - [@admiral0](https://github.com/admiral0)
+
+
+### Rule Changes
+
+* rule(Delete or rename shell history): fix warnings/FPs + container teardown [[#1423](https://github.com/falcosecurity/falco/pull/1423)] - [@mstemm](https://github.com/mstemm)
+* rule(Write below root): ensure proc_name_exists too [[#1423](https://github.com/falcosecurity/falco/pull/1423)] - [@mstemm](https://github.com/mstemm)
+
+
+## v0.26.0
+
+Released on 2020-24-09
+
+### Major Changes
+
+* new: address several sources of FPs, primarily from GKE environments. [[#1372](https://github.com/falcosecurity/falco/pull/1372)] - [@mstemm](https://github.com/mstemm)
+* new: driver updated to 2aa88dcf6243982697811df4c1b484bcbe9488a2 [[#1410](https://github.com/falcosecurity/falco/pull/1410)] - [@leogr](https://github.com/leogr)
+* new(scripts/falco-driver-loader): detect and try to build the Falco kernel module driver using different GCC versions available in the current environment. [[#1408](https://github.com/falcosecurity/falco/pull/1408)] - [@fntlnz](https://github.com/fntlnz)
+* new: tgz (tarball) containing the statically-linked (musl) binary of Falco is now automatically built and published on bintray [[#1377](https://github.com/falcosecurity/falco/pull/1377)] - [@leogr](https://github.com/leogr)
+
+
+### Minor Changes
+
+* update: bump Falco engine version to 7 [[#1381](https://github.com/falcosecurity/falco/pull/1381)] - [@leogr](https://github.com/leogr)
+* update: the required_engine_version is now on by default [[#1381](https://github.com/falcosecurity/falco/pull/1381)] - [@leogr](https://github.com/leogr)
+* update: falcosecurity/falco-no-driver image now uses the statically-linked Falco [[#1377](https://github.com/falcosecurity/falco/pull/1377)] - [@leogr](https://github.com/leogr)
+* docs(proposals): artifacts storage [[#1375](https://github.com/falcosecurity/falco/pull/1375)] - [@leodido](https://github.com/leodido)
+* docs(proposals): artifacts cleanup [[#1375](https://github.com/falcosecurity/falco/pull/1375)] - [@leodido](https://github.com/leodido)
+
+
+### Rule Changes
+
+* rule(macro inbound_outbound): add brackets to disambiguate operator precedence [[#1373](https://github.com/falcosecurity/falco/pull/1373)] - [@ldegio](https://github.com/ldegio)
+* rule(macro redis_writing_conf): add brackets to disambiguate operator precedence [[#1373](https://github.com/falcosecurity/falco/pull/1373)] - [@ldegio](https://github.com/ldegio)
+* rule(macro run_by_foreman): add brackets to disambiguate operator precedence [[#1373](https://github.com/falcosecurity/falco/pull/1373)] - [@ldegio](https://github.com/ldegio)
+* rule(macro consider_packet_socket_communication): enable "Packet socket created in container" rule by default. [[#1402](https://github.com/falcosecurity/falco/pull/1402)] - [@rung](https://github.com/rung)
+* rule(Delete or rename shell history): skip docker overlay filesystems when considering bash history [[#1393](https://github.com/falcosecurity/falco/pull/1393)] - [@mstemm](https://github.com/mstemm)
+* rule(Disallowed K8s User): quote colons in user names [[#1393](https://github.com/falcosecurity/falco/pull/1393)] - [@mstemm](https://github.com/mstemm)
+* rule(macro falco_sensitive_mount_containers): Adds a trailing slash to avoid repo naming issues [[#1394](https://github.com/falcosecurity/falco/pull/1394)] - [@bgeesaman](https://github.com/bgeesaman)
+* rule: adds user.loginuid to the default Falco rules that also contain user.name [[#1369](https://github.com/falcosecurity/falco/pull/1369)] - [@csschwe](https://github.com/csschwe)
+
+## v0.25.0
+
+Released on 2020-08-25
+
+### Major Changes
+
+* new(userspace/falco): print the Falco and driver versions at the very beginning of the output. [[#1303](https://github.com/falcosecurity/falco/pull/1303)] - [@leogr](https://github.com/leogr)
+* new: libyaml is now bundled in the release process. Users can now avoid installing libyaml directly when getting Falco from the official release. [[#1252](https://github.com/falcosecurity/falco/pull/1252)] - [@fntlnz](https://github.com/fntlnz)
+
+
+### Minor Changes
+
+* docs(test): step-by-step instructions to run integration tests locally [[#1313](https://github.com/falcosecurity/falco/pull/1313)] - [@leodido](https://github.com/leodido)
+* update: renameat2 syscall support [[#1355](https://github.com/falcosecurity/falco/pull/1355)] - [@fntlnz](https://github.com/fntlnz)
+* update: support for 5.8.x kernels [[#1355](https://github.com/falcosecurity/falco/pull/1355)] - [@fntlnz](https://github.com/fntlnz)
+
+
+### Bug Fixes
+
+* fix(userspace/falco): correct the fallback mechanism for loading the kernel module [[#1366](https://github.com/falcosecurity/falco/pull/1366)] - [@leogr](https://github.com/leogr)
+* fix(falco-driver-loader): script crashing when using arguments [[#1330](https://github.com/falcosecurity/falco/pull/1330)] - [@antoinedeschenes](https://github.com/antoinedeschenes)
+
+
+### Rule Changes
+
+* rule(macro user_trusted_containers): add `sysdig/node-image-analyzer` and `sysdig/agent-slim` [[#1321](https://github.com/falcosecurity/falco/pull/1321)] - [@Kaizhe](https://github.com/Kaizhe)
+* rule(macro falco_privileged_images): add `docker.io/falcosecurity/falco` [[#1326](https://github.com/falcosecurity/falco/pull/1326)] - [@nvanheuverzwijn](https://github.com/nvanheuverzwijn)
+* rule(EphemeralContainers Created): add new rule to detect ephemeral container created [[#1339](https://github.com/falcosecurity/falco/pull/1339)] - [@Kaizhe](https://github.com/Kaizhe)
+* rule(macro user_read_sensitive_file_containers): replace endswiths with exact image repo name [[#1349](https://github.com/falcosecurity/falco/pull/1349)] - [@Kaizhe](https://github.com/Kaizhe)
+* rule(macro user_trusted_containers): replace endswiths with exact image repo name [[#1349](https://github.com/falcosecurity/falco/pull/1349)] - [@Kaizhe](https://github.com/Kaizhe)
+* rule(macro user_privileged_containers): replace endswiths with exact image repo name [[#1349](https://github.com/falcosecurity/falco/pull/1349)] - [@Kaizhe](https://github.com/Kaizhe)
+* rule(macro trusted_images_query_miner_domain_dns): replace endswiths with exact image repo name [[#1349](https://github.com/falcosecurity/falco/pull/1349)] - [@Kaizhe](https://github.com/Kaizhe)
+* rule(macro falco_privileged_containers): append "/" to quay.io/sysdig [[#1349](https://github.com/falcosecurity/falco/pull/1349)] - [@Kaizhe](https://github.com/Kaizhe)
+* rule(list falco_privileged_images): add images docker.io/sysdig/agent-slim and docker.io/sysdig/node-image-analyzer [[#1349](https://github.com/falcosecurity/falco/pull/1349)] - [@Kaizhe](https://github.com/Kaizhe)
+* rule(list falco_sensitive_mount_images): add image docker.io/sysdig/agent-slim [[#1349](https://github.com/falcosecurity/falco/pull/1349)] - [@Kaizhe](https://github.com/Kaizhe)
+* rule(list k8s_containers): prepend docker.io to images [[#1349](https://github.com/falcosecurity/falco/pull/1349)] - [@Kaizhe](https://github.com/Kaizhe)
+* rule(macro exe_running_docker_save): add better support for centos [[#1350](https://github.com/falcosecurity/falco/pull/1350)] - [@admiral0](https://github.com/admiral0)
+* rule(macro rename): add `renameat2` syscall [[#1359](https://github.com/falcosecurity/falco/pull/1359)] - [@leogr](https://github.com/leogr)
+* rule(Read sensitive file untrusted): add trusted images into whitelist [[#1327](https://github.com/falcosecurity/falco/pull/1327)] - [@Kaizhe](https://github.com/Kaizhe)
+* rule(Pod Created in Kube Namespace): add new list k8s_image_list as white list [[#1336](https://github.com/falcosecurity/falco/pull/1336)] - [@Kaizhe](https://github.com/Kaizhe)
+* rule(list allowed_k8s_users): add "kubernetes-admin" user [[#1323](https://github.com/falcosecurity/falco/pull/1323)] - [@leogr](https://github.com/leogr)
 
 ## v0.24.0
 
