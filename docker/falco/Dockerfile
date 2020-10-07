@@ -1,3 +1,11 @@
+FROM falcosecurity/falco-builder AS builder
+
+COPY . /source/falco
+
+RUN /usr/bin/entrypoint cmake && \
+    /usr/bin/entrypoint all && \
+    /usr/bin/entrypoint package
+
 FROM ubuntu:bionic
 
 LABEL maintainer="cncf-falco-dev@lists.cncf.io"
@@ -37,6 +45,7 @@ RUN apt-get update \
 	libc6-dev \
 	libelf-dev \
 	libmpx2 \
+	libssl1.0-dev \
 	llvm-7 \
 	netcat \
 	xz-utils \
@@ -57,12 +66,9 @@ RUN rm -rf /usr/bin/clang \
 RUN rm -df /lib/modules \
 	&& ln -s $HOST_ROOT/lib/modules /lib/modules
 
-RUN curl -s https://falco.org/repo/falcosecurity-3672BA8F.asc | apt-key add - \
-	&& echo "deb https://dl.bintray.com/falcosecurity/${VERSION_BUCKET} stable main" | tee -a /etc/apt/sources.list.d/falcosecurity.list \
-	&& apt-get update -y \
-	&& if [ "$FALCO_VERSION" = "latest" ]; then apt-get install -y --no-install-recommends falco; else apt-get install -y --no-install-recommends falco=${FALCO_VERSION}; fi \
-	&& apt-get clean \
-	&& rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /build/release/falco*.deb /tmp
+RUN dpkg -i /tmp/falco*.deb ; rm -rf /tmp/falco*.deb
 
 # Change the falco config within the container to enable ISO 8601
 # output.
@@ -70,7 +76,7 @@ RUN sed -e 's/time_format_iso_8601: false/time_format_iso_8601: true/' < /etc/fa
 	&& mv /etc/falco/falco.yaml.new /etc/falco/falco.yaml
 
 
-COPY ./docker-entrypoint.sh /
+COPY ./docker/falco/docker-entrypoint.sh /
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 

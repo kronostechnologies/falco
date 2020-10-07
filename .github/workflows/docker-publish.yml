@@ -1,0 +1,31 @@
+name: Docker
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    steps:
+      - id: checkout
+        uses: actions/checkout@v2
+      - id: build_info
+        run: |
+          echo ::set-output name=tags::ghcr.io/${{ github.repository_owner }}/falco:${GITHUB_REF#refs/tags/}
+      - id: build
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./docker/falco/Dockerfile
+          tags: ${{ steps.build_info.outputs.tags }}
+          platforms: linux/amd64
+      - id: login
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: kronostechnologies-build
+          password: ${{ secrets.GHCR_TOKEN }}
+      - id: push
+        run: docker push ${{ steps.build_info.outputs.tags }}
