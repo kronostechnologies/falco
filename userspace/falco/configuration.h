@@ -217,6 +217,7 @@ public:
 	std::string m_webserver_k8s_audit_endpoint;
 	bool m_webserver_ssl_enabled;
 	std::string m_webserver_ssl_certificate;
+	bool m_webserver_ssl_verify_peer;
 	std::set<syscall_evt_drop_mgr::action> m_syscall_evt_drop_actions;
 	double m_syscall_evt_drop_rate;
 	double m_syscall_evt_drop_max_burst;

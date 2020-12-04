@@ -211,6 +211,11 @@ void falco_webserver::start()
 		cpp_options.push_back(to_string(m_config->m_webserver_listen_port) + "s");
 		cpp_options.push_back("ssl_certificate");
 		cpp_options.push_back(m_config->m_webserver_ssl_certificate);
+		if(m_config->m_webserver_ssl_verify_peer)
+		{
+			cpp_options.push_back("ssl_verify_peer");
+			cpp_options.push_back("yes");
+		}
 	}
 	else
 	{
